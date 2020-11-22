@@ -2,9 +2,15 @@ import axios from "axios";
 
 export default axios.create({
   baseURL: "https://api.github.com",
-  headers: { Accept: "application/vnd.github.v3+json" }
+  params: {
+    per_page: 100
+  },
+  headers: { 
+    Accept: "application/vnd.github.v3+json"
+  }
 });
 
+// list.sort((a, b) => (a.color - b.color))
 // list.sort((a, b) => (a.color > b.color) ? 1 : -1)
 // list.sort(a, b) => (a.color > b.color) ? 1 : (a.color === b.color) ? ((a.size > b.size) ? 1 : -1) : -1 
 

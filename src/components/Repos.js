@@ -4,14 +4,9 @@ import { Icon, Header, Image, Menu, Table } from 'semantic-ui-react'
 
 const Repos = ({ orgRepos }) => {
 
-  const org = orgRepos.slice(0, 1);
-  console.log(org);
-
-  const renderRepos = orgRepos.sort((a, b) => {
-      if (a.stargazers_count > b.stargazers_count) return -1
-      else if (a.stargazers_count < b.stargazers_count) return 1
-      return 0
-    }).map(repo => {
+  const renderRepos = orgRepos.sort(
+    ( a, b) => (a.stargazers_count < b.stargazers_count) ? 1 : (a.stargazers_count === b.stargazers_count) ? ((a.watchers_count < b.watchers_count) ? 1 : -1) : -1
+  ).map(repo => {
     return(
       <Table.Row key={repo.id}>
         <Table.Cell>{repo.name}</Table.Cell>
@@ -23,14 +18,20 @@ const Repos = ({ orgRepos }) => {
     );
   });
 
+  const renderHeader = [...orgRepos].slice(0, 1).map(org => {
+    return(
+      <Header as='h4' image key={org.id}>
+        <Image src={org.owner.avatar_url} rounded size='mini' />
+        <Header.Content>
+          <span style={{textTransform: 'uppercase'}}>{org.owner.login}</span>  -  Repos
+        </Header.Content>
+      </Header>
+    );
+  });
+
     return(
       <div className="repo-container">
-        <Header as='h4' image>
-            <Image src={org[0].owner.avatar_url} rounded size='mini' />
-            <Header.Content>
-              <span style={{textTransform: 'uppercase'}}>{org[0].owner.login}</span>  -  Repos
-            </Header.Content>
-        </Header>
+        {renderHeader}
         <Table celled inverted>
           <Table.Header>
             <Table.Row>
@@ -49,7 +50,7 @@ const Repos = ({ orgRepos }) => {
           <Table.Footer>
             <Table.Row>
               <Table.HeaderCell colSpan='5'>
-                <Menu floated='right' pagination>
+                <Menu floated='right' pagination inverted>
                   <Menu.Item as='a' icon>
                     <Icon name='chevron left' />
                   </Menu.Item>

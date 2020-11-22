@@ -7,7 +7,7 @@ import Repos from './Repos';
 
 class App extends React.Component {
 
-  state = { org: '', orgRepos: []}
+  state = { org: '', orgRepos: [] }
 
   getOrganization = async (orgName) => {
     // console.log(orgName);
