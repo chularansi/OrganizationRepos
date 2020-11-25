@@ -3,7 +3,8 @@ import axios from "axios";
 export default axios.create({
   baseURL: "https://api.github.com",
   params: {
-    per_page: 100
+    per_page: 100,
+    type: 'public'
   },
   headers: { 
     Accept: "application/vnd.github.v3+json"
@@ -26,3 +27,56 @@ export default axios.create({
 //     starNumber={name.stargazers_count}
 //   />
 // ))
+
+// addWatchedToMembers(members) {
+//   const tempMembers = [...members];
+//   const promises = [];
+//   members.map(async member => {
+//     const resSubcriptions = await github.get(`/users/${member.login}/subscriptions`);
+//     promises.push(resSubcriptions);
+//   });
+
+//   Promise.all(promises).then((responses) => {
+//     const watchedMembers = responses.map((response) => {
+//       return tempMembers.find(m => {
+//         if (m.login === response.login) {
+//           m.watched = response.data.length;
+//         }
+//         return m;
+//       });
+//     });
+
+//     this.setState({members: watchedMembers });
+//   });
+
+  // const noOfWatched = resSubcriptions.data.length;
+  //   addedWatchedMembers.find(m => {
+  //     if (m.login === member.login) {
+  //       m.watched = noOfWatched;
+  //     }
+  //     return m;
+  //   });
+// }
+
+// const watchedMembers = sortedMembers.map(member => {
+    //   return this.addWatchedToMembers(member);
+    // });
+    // console.log(watchedMembers);
+    // get watched by member
+    // const addedWatchedMembers = [...sortedMembers];
+
+    // const watchedToMembers = () => {
+    //   sortedMembers.map(async member => {
+    //     const resSubcriptions = await github.get(`/users/${member.login}/subscriptions`);
+    //     const noOfWatched = resSubcriptions.data.length;
+
+    //     addedWatchedMembers.find(m => {
+    //       if (m.login === member.login) {
+    //         m.watched = noOfWatched;
+    //       }
+    //       return m;
+    //     });
+    //   });
+    // };
+    
+    // watchedToMembers();

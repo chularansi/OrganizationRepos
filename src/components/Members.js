@@ -1,49 +1,69 @@
-import React from 'react';
-import github from '../apis/github';
+import React, { useState, useEffect } from 'react';
+import { List, Segment, Image, Pagination, ListContent } from 'semantic-ui-react';
 
 import './Members.css';
+import Watch from './Watch';
 
-class Members extends React.Component {
-  state = { members: []};
+const Members = ({ members, onMemSubmit }) => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
+  const [indexOfFirstItem, setIndexOfFirstItem] = useState(0);
+  const [indexOfLastItem, setIndexOfLastItem] = useState(10);
 
-  async componentDidMount() {
-    const {orgName} = this.props;
-    if (this.props.orgName) {
-      const response = await github.get(`/orgs/${orgName}/members`);
-      this.setState({ members: response.data});
-    }
-  }
+  // useEffect(() => {
+  //   // return () => {
+  //   //   cleanup
+  //   // }
+  // }, [state])
 
-  // componentDidUpdate() {
-  //   this.componentDidMount();
-  // }
+  const btnClick = async (event, paginatedData) => {
+    await setCurrentPage(paginatedData.activePage);
+    await setIndexOfFirstItem(currentPage * itemsPerPage - itemsPerPage);
+    await setIndexOfLastItem(currentPage * itemsPerPage);
+  };
 
-  handleChange = (e) => {
-    console.log(e.target.value);
-  }
-
-  renderMembers() {
-    if (this.state.members.length > 0) {
-      return this.state.members.map(member => {
-        return <option key={member.id} value={member.login}>{member.login}</option>
+  const renderMembers = () => {
+    if (members.length > 0) {
+      return members.slice(indexOfFirstItem, indexOfLastItem).map(member => {
+        return(
+          <List.Item key={member.id} style={{cursor: 'pointer'}} >
+            <ListContent floated='right'>
+              <Watch member={member.login} />
+            </ListContent>
+            <Image avatar src={member.avatar_url} />
+            <List.Content style={{textTransform: 'capitalize'}} onClick={() => onMemSubmit(member.login)}>
+              {member.login}
+            </List.Content>
+          </List.Item>
+        );
       });
     }
 
-    return <option>No members</option>
+    return(
+      <List.Item>
+        <List.Content>
+          No members
+        </List.Content>
+      </List.Item>
+    );
   }
 
-  render() {
     return(
       <div>
         Members
         <div>
-          <select onChange={this.handleChange}>
-            {this.renderMembers()}
-          </select>
+          <Segment inverted>
+            <List divided inverted relaxed>
+              {renderMembers()}
+            </List>
+              <Pagination inverted defaultActivePage={1} totalPages={Math.ceil(members.length / itemsPerPage)}
+                onPageChange={btnClick} boundaryRange={0} ellipsisItem={null}
+                firstItem={null} lastItem={null} siblingRange={1}
+              />
+          </Segment>
         </div>     
       </div>
     );
-  }
 }
 
 export default Members;
