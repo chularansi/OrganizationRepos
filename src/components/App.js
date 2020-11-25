@@ -15,12 +15,19 @@ class App extends React.Component {
     orgRepos: [], 
     member: '', 
     members: [], 
-    memberRepos: [], 
-    memberFlag: false,
+    memberRepos: [],
+    memberWatchedRepos: [],
+    reposFlag: null,
     orgData: {
       imageUrl: '',
       orgName: ''
     }
+  }
+
+  reposEnum = {
+    ORGS: 'orgs',
+    MEMBER: 'member',
+    WATCH: 'watch'
   }
 
   componentDidMount() {
@@ -49,7 +56,7 @@ class App extends React.Component {
 
   getOrganization = (orgName, orgImage) => {
     this.setState({ loading: true });
-    this.setState({ memberFlag: false});
+    this.setState({ reposFlag: this.reposEnum.ORGS });
 
     this.fetchOrganizationRepos(orgName);
     this.fetchOrganizationMembers(orgName);
@@ -67,13 +74,20 @@ class App extends React.Component {
     this.setState({ loading: true });
 
     this.setState({ member: memberName });
-    this.setState({ memberFlag: true});
+    this.setState({ reposFlag: this.reposEnum.MEMBER });
+    console.log(this.state.reposFlag);
+
     const resMemberRepos = await github.get(`/users/${memberName}/repos`);
     const sortedMembersRepos = resMemberRepos.data
       .sort((a, b) => (a.stargazers_count < b.stargazers_count) ? 1 : (a.stargazers_count === b.stargazers_count) ? ((a.watchers_count < b.watchers_count) ? 1 : -1) : -1);
     this.setState({ memberRepos: sortedMembersRepos });
 
     this.setState({ loading: false });
+  }
+
+  receiveMemWatchedRepos = (memWatchData) => {
+    this.setState({ memberWatchedRepos: memWatchData });
+    this.setState({ reposFlag: this.reposEnum.WATCH })
   }
 
   renderLoader() {
@@ -84,12 +98,24 @@ class App extends React.Component {
     }
   }
 
-  renderRepos() {
-    if (!this.state.memberFlag) {
-      return <Repos repos={this.state.orgRepos} orgData={this.state.orgData} org={true} />
-    } else if (this.state.memberFlag) {
-      return <Repos repos={this.state.memberRepos} orgData={this.state.orgData} org={false} />
+  renderRepos() { 
+
+    switch(this.state.reposFlag) {
+      case this.reposEnum.ORGS:
+        return <Repos repos={this.state.orgRepos} orgData={this.state.orgData} org={true} />
+      case this.reposEnum.MEMBER:
+        return <Repos repos={this.state.memberRepos} orgData={this.state.orgData} org={false} />
+      case this.reposEnum.WATCH:
+        return <Repos repos={this.state.memberWatchedRepos} orgData={this.state.orgData} org={false} />
     }
+
+    // if (this.state.reposFlag === this.reposEnum.ORGS) {
+    //   return <Repos repos={this.state.orgRepos} orgData={this.state.orgData} org={true} />
+    // } else if (this.state.reposFlag === this.reposEnum.MEMBER) {
+    //   return <Repos repos={this.state.memberRepos} orgData={this.state.orgData} org={false} />
+    // } else {
+    //   return <Repos repos={this.state.memberWatchedRepos} orgData={this.state.orgData} org={false} />
+    // }
   }
 
   render() {
@@ -100,7 +126,7 @@ class App extends React.Component {
             <Organizations orgs={this.state.orgs} onOrgSubmit={this.getOrganization} />
           </div>
           <div>
-            <Members members={this.state.members} onMemSubmit={this.getMember} />
+            <Members members={this.state.members} onMemSubmit={this.getMember} onReceiveMember={this.receiveMemWatchedRepos} />
           </div>
         </div>
         <br />

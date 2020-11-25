@@ -1,10 +1,11 @@
 import React from 'react';
 import { List, Segment, Image, Pagination, ListContent } from 'semantic-ui-react';
-
 import './Members.css';
 import Watch from './Watch';
-// { members, onMemSubmit }
+
 class Members extends React.Component {
+  // _isMounted = false;
+
   constructor(props) {
     super(props);
 
@@ -16,10 +17,25 @@ class Members extends React.Component {
     };
   }
 
+  componentDidMount() {
+    // this._isMounted = true;
+  }
+
+  componentWillUnmount() {
+    // this._isMounted = false;
+    // this.setState = (state,callback)=>{
+    //   return;
+    // };
+  }
+
   btnClick = async (event, paginatedData) => {
     await this.setState({currentPage: paginatedData.activePage});
     await this.setState({indexOfFirstItem: this.state.currentPage * this.state.itemsPerPage - this.state.itemsPerPage});
     await this.setState({indexOfLastItem: this.state.currentPage * this.state.itemsPerPage});
+  }
+
+  memberClick = (memWatchData) => {
+    this.props.onReceiveMember(memWatchData);
   }
 
   renderMembers() {
@@ -29,7 +45,7 @@ class Members extends React.Component {
         return(
           <List.Item key={member.id} style={{cursor: 'pointer'}} >
             <ListContent floated='right'>
-              <Watch member={member.login} />
+              <Watch member={member.login} memberClick={this.memberClick} />
             </ListContent>
             <Image avatar src={member.avatar_url} />
             <List.Content style={{textTransform: 'capitalize'}} onClick={() => onMemSubmit(member.login)}>
