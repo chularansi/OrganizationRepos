@@ -1,30 +1,31 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { List, Segment, Image, Pagination, ListContent } from 'semantic-ui-react';
 
 import './Members.css';
 import Watch from './Watch';
+// { members, onMemSubmit }
+class Members extends React.Component {
+  constructor(props) {
+    super(props);
 
-const Members = ({ members, onMemSubmit }) => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(10);
-  const [indexOfFirstItem, setIndexOfFirstItem] = useState(0);
-  const [indexOfLastItem, setIndexOfLastItem] = useState(10);
+    this.state = { 
+      currentPage: 1,
+      itemsPerPage: 10,
+      indexOfFirstItem: 0,
+      indexOfLastItem: 10,
+    };
+  }
 
-  // useEffect(() => {
-  //   // return () => {
-  //   //   cleanup
-  //   // }
-  // }, [state])
+  btnClick = async (event, paginatedData) => {
+    await this.setState({currentPage: paginatedData.activePage});
+    await this.setState({indexOfFirstItem: this.state.currentPage * this.state.itemsPerPage - this.state.itemsPerPage});
+    await this.setState({indexOfLastItem: this.state.currentPage * this.state.itemsPerPage});
+  }
 
-  const btnClick = async (event, paginatedData) => {
-    await setCurrentPage(paginatedData.activePage);
-    await setIndexOfFirstItem(currentPage * itemsPerPage - itemsPerPage);
-    await setIndexOfLastItem(currentPage * itemsPerPage);
-  };
-
-  const renderMembers = () => {
+  renderMembers() {
+    const {members, onMemSubmit} = this.props;
     if (members.length > 0) {
-      return members.slice(indexOfFirstItem, indexOfLastItem).map(member => {
+      return members.slice(this.state.indexOfFirstItem, this.state.indexOfLastItem).map(member => {
         return(
           <List.Item key={member.id} style={{cursor: 'pointer'}} >
             <ListContent floated='right'>
@@ -48,22 +49,24 @@ const Members = ({ members, onMemSubmit }) => {
     );
   }
 
+  render() {
     return(
       <div>
         Members
         <div>
           <Segment inverted>
             <List divided inverted relaxed>
-              {renderMembers()}
+              {this.renderMembers()}
             </List>
-              <Pagination inverted defaultActivePage={1} totalPages={Math.ceil(members.length / itemsPerPage)}
-                onPageChange={btnClick} boundaryRange={0} ellipsisItem={null}
+              <Pagination inverted defaultActivePage={1} totalPages={Math.ceil(this.props.members.length / this.state.itemsPerPage)}
+                onPageChange={this.btnClick} boundaryRange={0} ellipsisItem={null}
                 firstItem={null} lastItem={null} siblingRange={1}
               />
           </Segment>
         </div>     
       </div>
     );
+  }
 }
 
 export default Members;
