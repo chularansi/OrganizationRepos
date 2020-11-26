@@ -36,7 +36,7 @@ class Organizations extends React.Component {
   render() {
     return(
       <div>
-        Organizations
+        <h2>Organizations</h2>
         <div>
           <Segment inverted>
             <List divided inverted relaxed>

@@ -1,10 +1,8 @@
 import React from 'react';
 import { List, Image, ListContent, Segment, Pagination } from 'semantic-ui-react';
-import './Members.css';
 import Watch from './Watch';
 
 class Members extends React.Component {
-  // _isMounted = false;
 
   constructor(props) {
     super(props);
@@ -15,17 +13,6 @@ class Members extends React.Component {
       indexOfFirstItem: 0,
       indexOfLastItem: 10,
     };
-  }
-
-  componentDidMount() {
-    // this._isMounted = true;
-  }
-
-  componentWillUnmount() {
-    // this._isMounted = false;
-    // this.setState = (state,callback)=>{
-    //   return;
-    // };
   }
 
   btnClick = async (event, paginatedData) => {
@@ -74,7 +61,7 @@ class Members extends React.Component {
   render() {
     return(
       <div>
-        Members
+        <h2>Members</h2>
         <div>
           <Segment inverted>
             <List divided inverted relaxed>

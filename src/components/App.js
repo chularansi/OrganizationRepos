@@ -114,6 +114,9 @@ class App extends React.Component {
   render() {
     return(
       <React.Fragment>
+        <div class="ui one item menu inverted">
+          <h1 style={{color: 'whitesmoke'}}>Organizations Repos</h1>
+        </div>
         <div className="main-container">
           <div>
             <Organizations orgs={this.state.orgs} onOrgSubmit={this.getOrganization} />
