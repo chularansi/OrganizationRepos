@@ -1,5 +1,5 @@
 import React from 'react';
-import { List, Segment, Image, Pagination, ListContent } from 'semantic-ui-react';
+import { List, Image, ListContent, Segment, Pagination } from 'semantic-ui-react';
 import './Members.css';
 import Watch from './Watch';
 
@@ -38,17 +38,23 @@ class Members extends React.Component {
     this.props.onReceiveMember(memWatchData);
   }
 
+  receiveWatched = (watched) => {
+    console.log(watched);
+    this.props.onMemWatchSubmit(watched);
+  }
+
   renderMembers() {
     const {members, onMemSubmit} = this.props;
-    if (members.length > 0) {
+    
+    if (members && members.length > 0) {
       return members.slice(this.state.indexOfFirstItem, this.state.indexOfLastItem).map(member => {
         return(
           <List.Item key={member.id} style={{cursor: 'pointer'}} >
             <ListContent floated='right'>
               <Watch member={member.login} memberClick={this.memberClick} />
             </ListContent>
-            <Image avatar src={member.avatar_url} />
-            <List.Content style={{textTransform: 'capitalize'}} onClick={() => onMemSubmit(member.login)}>
+            <Image avatar src={member.avatar_url} onClick={() => onMemSubmit(member.login, member.avatar_url)} />
+            <List.Content style={{textTransform: 'capitalize'}} onClick={() => onMemSubmit(member.login, member.avatar_url)}>
               {member.login}
             </List.Content>
           </List.Item>

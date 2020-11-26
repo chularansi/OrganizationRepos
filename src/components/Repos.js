@@ -1,4 +1,5 @@
 import React from 'react';
+import ReposEnum from '../helpers/ReposEnum';
 
 import { Header, Image, Table, Pagination } from 'semantic-ui-react'
 
@@ -35,33 +36,50 @@ class Repos extends React.Component {
   }
 
   renderHeader() {
-    const {repos, org, orgData} = this.props;
-    if(org) {
+    const {repos, repoFlag, orgData} = this.props;
+
+    if(repoFlag === ReposEnum.ORGS) {
       return(
         <Header as='h4' image>
           <Image src={orgData.imageUrl} rounded size='mini' />
           <Header.Content>
-            <span style={{textTransform: 'uppercase'}}>{orgData.orgName}</span>{org && orgData.orgName ? ' - Repos' : ''}
+            <span style={{textTransform: 'uppercase'}}>{orgData.orgName}</span>{repos && repos.length > 0 ? ' - Repos' : ' - No repos'}
           </Header.Content>
         </Header>
       );
     }
 
-    return [...repos.slice(0, 1)].map(repo => {
+    if(repoFlag === ReposEnum.MEMBER) {
       return(
-        <Header as='h4' image key={repo.id}>
+        <Header as='h4' image>
           <Image src={orgData.imageUrl} rounded size='mini' />
           <Header.Content>
             <span style={{textTransform: 'uppercase'}}>{orgData.orgName}</span>
           </Header.Content>
           <span>  -  </span>
-          <Image src={repo.owner.avatar_url} rounded size='mini' />
+          <Image src={this.props.memberData.imageUrl} rounded size='mini' />
           <Header.Content>
-            <span style={{textTransform: 'uppercase'}}>{repo.owner.login} - </span>Repos
+            <span style={{textTransform: 'uppercase'}}>{this.props.memberData.memberName}</span>{repos && repos.length > 0 ? ' - Repos' : ' - No Repos'}
           </Header.Content>
         </Header>
       );
-    });
+    }
+
+    if(repoFlag === ReposEnum.WATCH) {
+      return(
+        <Header as='h4' image>
+          <Image src={orgData.imageUrl} rounded size='mini' />
+          <Header.Content>
+            <span style={{textTransform: 'uppercase'}}>{orgData.orgName}</span>
+          </Header.Content>
+          <span>  -  </span>
+          <Image src={this.props.memberData.imageUrl} rounded size='mini' />
+          <Header.Content>
+            <span style={{textTransform: 'uppercase'}}>{this.props.memberData.memberName}</span>{repos && repos.length > 0 ? ' - Watched Repos' : ' - No Watched Repos'}
+          </Header.Content>
+        </Header>
+      );
+    }
   }
 
   render() {
@@ -78,7 +96,7 @@ class Repos extends React.Component {
               <Table.HeaderCell>Watched</Table.HeaderCell>
             </Table.Row>
           </Table.Header>
-  
+
           <Table.Body>
             {this.renderRepos()}
           </Table.Body>

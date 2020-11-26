@@ -3,7 +3,7 @@ import github from '../apis/github';
 import { Button, Label, Icon, Loader } from 'semantic-ui-react';
 
 class Watch extends React.Component {
-  // _isMounted = false;
+  _isMounted = false;
   
   constructor(props) {
     super(props);
@@ -23,26 +23,21 @@ class Watch extends React.Component {
       }
     }
 
-    // No state update necessary
     return null;
   }
 
   componentDidMount() {
-    // this._isMounted = true;
+    this._isMounted = true;
   }
 
   componentDidUpdate(prevProps, prevState) {
     if (this.state.watched === null) {
-      // At this point, we're in the "commit" phase, so it's safe to load the new data.
       this.updateWatched(prevState.member);
     }
   }
 
   componentWillUnmount() {
-    // this._isMounted = false;
-    // this.setState = (state,callback)=>{
-    //   return;
-    // };
+    this._isMounted = false;
   }
   
   updateWatched(member) {

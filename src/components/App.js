@@ -6,6 +6,7 @@ import github from '../apis/github';
 import './App.css';
 import Members from './Members';
 import Repos from './Repos';
+import ReposEnum from '../helpers/ReposEnum';
 
 class App extends React.Component {
 
@@ -13,7 +14,6 @@ class App extends React.Component {
     loading: false, 
     orgs: [],
     orgRepos: [], 
-    member: '', 
     members: [], 
     memberRepos: [],
     memberWatchedRepos: [],
@@ -21,13 +21,11 @@ class App extends React.Component {
     orgData: {
       imageUrl: '',
       orgName: ''
+    },
+    memberData: {
+      imageUrl: '',
+      memberName: ''
     }
-  }
-
-  reposEnum = {
-    ORGS: 'orgs',
-    MEMBER: 'member',
-    WATCH: 'watch'
   }
 
   componentDidMount() {
@@ -56,7 +54,7 @@ class App extends React.Component {
 
   getOrganization = (orgName, orgImage) => {
     this.setState({ loading: true });
-    this.setState({ reposFlag: this.reposEnum.ORGS });
+    this.setState({ reposFlag: ReposEnum.ORGS });
 
     this.fetchOrganizationRepos(orgName);
     this.fetchOrganizationMembers(orgName);
@@ -70,12 +68,15 @@ class App extends React.Component {
     this.setState({ loading: false });
   }
 
-  getMember = async (memberName) => {
+  getMember = async (memberName, memberImage) => {
     this.setState({ loading: true });
 
-    this.setState({ member: memberName });
-    this.setState({ reposFlag: this.reposEnum.MEMBER });
-    console.log(this.state.reposFlag);
+    this.setState({ 
+      memberData: {
+        ...this.state.memberData, imageUrl: memberImage, memberName
+      }
+    });
+    this.setState({ reposFlag: ReposEnum.MEMBER });
 
     const resMemberRepos = await github.get(`/users/${memberName}/repos`);
     const sortedMembersRepos = resMemberRepos.data
@@ -87,7 +88,7 @@ class App extends React.Component {
 
   receiveMemWatchedRepos = (memWatchData) => {
     this.setState({ memberWatchedRepos: memWatchData });
-    this.setState({ reposFlag: this.reposEnum.WATCH })
+    this.setState({ reposFlag: ReposEnum.WATCH })
   }
 
   renderLoader() {
@@ -99,23 +100,15 @@ class App extends React.Component {
   }
 
   renderRepos() { 
-
-    switch(this.state.reposFlag) {
-      case this.reposEnum.ORGS:
-        return <Repos repos={this.state.orgRepos} orgData={this.state.orgData} org={true} />
-      case this.reposEnum.MEMBER:
-        return <Repos repos={this.state.memberRepos} orgData={this.state.orgData} org={false} />
-      case this.reposEnum.WATCH:
-        return <Repos repos={this.state.memberWatchedRepos} orgData={this.state.orgData} org={false} />
+    switch (this.state.reposFlag) {
+      case ReposEnum.ORGS:
+        return <Repos repos={this.state.orgRepos} orgData={this.state.orgData} repoFlag={ReposEnum.ORGS} />
+      case ReposEnum.MEMBER:
+        return <Repos repos={this.state.memberRepos} orgData={this.state.orgData} memberData={this.state.memberData} repoFlag={ReposEnum.MEMBER} />
+      case ReposEnum.WATCH:
+        return <Repos repos={this.state.memberWatchedRepos} orgData={this.state.orgData} memberData={this.state.memberData} repoFlag={ReposEnum.WATCH} />
+      default:
     }
-
-    // if (this.state.reposFlag === this.reposEnum.ORGS) {
-    //   return <Repos repos={this.state.orgRepos} orgData={this.state.orgData} org={true} />
-    // } else if (this.state.reposFlag === this.reposEnum.MEMBER) {
-    //   return <Repos repos={this.state.memberRepos} orgData={this.state.orgData} org={false} />
-    // } else {
-    //   return <Repos repos={this.state.memberWatchedRepos} orgData={this.state.orgData} org={false} />
-    // }
   }
 
   render() {
