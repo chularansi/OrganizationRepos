@@ -3,6 +3,8 @@ import github from '../apis/github';
 import { Button, Label, Icon, Loader } from 'semantic-ui-react';
 
 class Watch extends React.Component {
+  _isMounted = false;
+
   constructor(props) {
     super(props);
 
@@ -25,6 +27,8 @@ class Watch extends React.Component {
   }
 
   componentDidMount() {
+    this._isMounted = true;
+
     if (this.state.watched === null) {
       this.updateWatched(this.props.member);
     }
@@ -33,9 +37,15 @@ class Watch extends React.Component {
   updateWatched = (member) => {
     github.get(`/users/${member}/subscriptions`).then(res =>{
       const sortedWatched = res.data.sort((a, b) => (a.stargazers_count < b.stargazers_count) ? 1 : (a.stargazers_count === b.stargazers_count) ? ((a.watchers_count < b.watchers_count) ? 1 : -1) : -1);
+      if (this._isMounted) {
         this.setState({ watched: res.data.length })
         this.setState({ watchData: sortedWatched })
+      }
     });
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
   render() {
